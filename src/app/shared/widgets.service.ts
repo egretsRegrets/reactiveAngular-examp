@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { Store } from '@ngrx/store';
 import 'rxjs/add/observable/of';
+import { AppStore } from '../app-store';
 import { Widget } from './widget.model';
+import { ADD_WIDGETS } from './widgets.reducer';
 
 const widgets = [
   {
@@ -26,7 +29,12 @@ const widgets = [
 
 @Injectable()
 export class WidgetsService {
-  widgets$: Observable<Widget[]> = Observable.of(widgets);
+  widgets$: Observable<Widget[]> = this.store.select('widgets');
 
-  constructor() {}
+  constructor(
+    private store: Store<AppStore>
+  ) {
+    this.store.dispatch({ type: ADD_WIDGETS, payload: widgets });
+  }
+
 }

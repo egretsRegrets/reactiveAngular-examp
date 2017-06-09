@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WidgetsService, Widget } from '../shared';
+import { Observable } from 'rxjs/Observable'
 
 @Component({
   selector: 'app-widgets',
@@ -7,15 +8,29 @@ import { WidgetsService, Widget } from '../shared';
   styleUrls: ['./widgets.component.css']
 })
 export class WidgetsComponent implements OnInit {
-  widgets: Widget[];
+  widgets$: Observable<Widget[]>;
   selectedWidget: Widget;
+
+  deleteWidget;
 
   constructor(
     private widgetsService: WidgetsService
   ) {}
 
   ngOnInit() {
-    this.widgetsService.widgets$.subscribe(widgets => this.widgets = widgets);
+    this.widgets$ = this.widgetsService.widgets$;
+
+    this.deleteWidget = function(widget: Widget) {
+      this.widgets.forEach((w, index) => {
+        if (w.id === widget.id) {
+          this.widgets.splice(index, 1);
+        }
+      });
+
+      // Generally, we would want to wait for the result of `widgetsService.deleteWidget`
+      // before resetting the current widget.
+      this.resetWidget();
+    }
   }
 
   resetWidget() {
@@ -27,16 +42,5 @@ export class WidgetsComponent implements OnInit {
     this.selectedWidget = widget;
   }
 
-  deleteWidget(widget: Widget) {
-    this.widgets.forEach((w, index) => {
-      if (w.id === widget.id) {
-        this.widgets.splice(index, 1);
-      }
-    });
-
-    // Generally, we would want to wait for the result of `widgetsService.deleteWidget`
-    // before resetting the current widget.
-    this.resetWidget();
-  }
 }
 
